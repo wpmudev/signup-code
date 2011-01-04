@@ -53,7 +53,7 @@ add_action('wp_head', 'signup_code_stylesheet');
 
 function signup_code_init() {
 	if ( !is_multisite() )
-		exit( 'The Simple Ads plugin is only compatible with WordPress Multisite.' );
+		exit( 'The Signup Code plugin is only compatible with WordPress Multisite.' );
 		
 	load_plugin_textdomain('signup_code', false, dirname(plugin_basename(__FILE__)).'/languages');
 }
