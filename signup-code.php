@@ -98,21 +98,21 @@ function signup_code_site_admin_options() {
 		//---------------------------------------------------//
 		default:
 	?>
-	<h2><?php _e('Signup Code') ?></h2>
+	<h2><?php _e('Signup Code', 'signup_code') ?></h2>
 	<form method="post" action="<?php print $signup_code_settings_page; ?>?page=signup_code&action=process">
 	<table class="form-table">
 		<tr valign="top"> 
-			<th scope="row"><?php _e('Code') ?></th> 
+			<th scope="row"><?php _e('Code', 'signup_code') ?></th> 
 			<td><input name="signup_code" type="text" id="signup_code" value="<?php echo get_site_option('signup_code'); ?>" style="width: 95%"/>
 				<br />
-				<?php _e('Users must enter this code in order to signup. Letters and numbers only.') ?>
+				<?php _e('Users must enter this code in order to signup. Letters and numbers only.', 'signup_code') ?>
 			</td>
 		</tr>
 		<tr valign="top"> 
-			<th scope="row"><?php _e('Signup Code Branding') ?></th> 
+			<th scope="row"><?php _e('Signup Code Branding', 'signup_code') ?></th> 
 			<td><input name="signup_code_branding" type="text" id="signup_code_branding" value="<?php echo stripslashes(get_site_option('signup_code_branding', 'Signup Code')); ?>" style="width: 95%"/>
 				<br />
-				<?php _e('This is the text that will be displayed on the signup form. Ex: Invite Code') ?>
+				<?php _e('This is the text that will be displayed on the signup form. Ex: Invite Code', 'signup_code') ?>
 			</td>
 		</tr>
 	</table>
@@ -155,7 +155,7 @@ function signup_code_field_wpmu($errors) {
 	$signup_code = get_site_option('signup_code');
 	if ( !empty( $signup_code ) ) {
 	?>
-	<label for="password"><?php _e(stripslashes(get_site_option('signup_code_branding', 'Signup Code'))); ?>:</label>
+	<label for="password"><?php _e(stripslashes(get_site_option('signup_code_branding', 'Signup Code')), 'signup_code'); ?>:</label>
 	<?php
         if($error) {
 		echo '<p class="error">' . $error . '</p>';
@@ -171,7 +171,7 @@ function signup_code_field_bp() {
 	if ( !empty( $signup_code ) ) {
 	?>
     <div class="register-section" id="blog-details-section">
-    <label for="password"><?php _e(stripslashes(get_site_option('signup_code_branding', 'Signup Code'))); ?>:</label>
+    <label for="password"><?php _e(stripslashes(get_site_option('signup_code_branding', 'Signup Code')), 'signup_code'); ?>:</label>
 		<?php do_action( 'bp_signup_code_errors' ) ?>
 		<input type="text" name="signup_code" id="signup_code" value="<?php echo $_GET['code']; ?>" />
     </div>
@@ -183,7 +183,7 @@ function signup_code_filter_wpmu($content) {
 	$signup_code = get_site_option('signup_code');
 	if ( !empty( $signup_code ) ) {
 		if($signup_code != $_POST['signup_code'] && $_POST['stage'] == 'validate-user-signup') {
-			$content['errors']->add('signup_code', __('Invalid ' . strtolower(stripslashes(get_site_option('signup_code_branding', 'Signup Code'))) . '.'));
+			$content['errors']->add('signup_code', __('Invalid ' . strtolower(stripslashes(get_site_option('signup_code_branding', 'Signup Code'))) . '.', 'signup_code'));
 		}
 	}
 	return $content;
@@ -194,10 +194,18 @@ function signup_code_filter_bp() {
 	$signup_code = get_site_option('signup_code');
 	if ( !empty( $signup_code ) ) {
 		if($signup_code != $_POST['signup_code'] && isset($_POST['signup_username'])) {
-			$bp->signup->errors['signup_code'] = __('Invalid ' . strtolower(stripslashes(get_site_option('signup_code_branding', 'Signup Code'))) . '.');
+			$bp->signup->errors['signup_code'] = __('Invalid ' . strtolower(stripslashes(get_site_option('signup_code_branding', 'Signup Code'))) . '.', 'signup_code');
 		}
 	}
 	return $content;
 }
 
-?>
+if ( !function_exists( 'wdp_un_check' ) ) {
+	add_action( 'admin_notices', 'wdp_un_check', 5 );
+	add_action( 'network_admin_notices', 'wdp_un_check', 5 );
+
+	function wdp_un_check() {
+		if ( !class_exists( 'WPMUDEV_Update_Notifications' ) && current_user_can( 'edit_users' ) )
+			echo '<div class="error fade"><p>' . __('Please install the latest version of <a href="http://premium.wpmudev.org/project/update-notifications/" title="Download Now &raquo;">our free Update Notifications plugin</a> which helps you stay up-to-date with the most stable, secure versions of WPMU DEV themes and plugins. <a href="http://premium.wpmudev.org/wpmu-dev/update-notifications-plugin-information/">More information &raquo;</a>', 'wpmudev') . '</a></p></div>';
+	}
+}
