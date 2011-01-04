@@ -1,11 +1,12 @@
 <?php
 /*
 Plugin Name: Signup Code
-Plugin URI: 
-Description:
-Author: Andrew Billits
-Version: 1.0.1
-Author URI:
+Plugin URI: http://premium.wpmudev.org/project/signup-code
+Description: Limit who can sign up for a blog or user account at your site by requiring a special code that you can easily configure yourself
+Author: S H Mohanjith (Incsub), Andrew Billits (Incsub)
+Version: 1.0.2
+Author URI: http://premium.wpmudev.org
+Network: true
 */
 
 /* 
@@ -25,12 +26,22 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+global $signup_code_settings_page, $signup_code_settings_page_long;
+
+if ( version_compare($wp_version, '3.0.9', '>') ) {
+	$signup_code_settings_page = 'settings.php';
+	$signup_code_settings_page_long = 'network/settings.php';
+} else {
+	$signup_code_settings_page = 'ms-admin.php';
+	$signup_code_settings_page_long = 'ms-admin.php';
+}
+
 //------------------------------------------------------------------------//
 //---Hook-----------------------------------------------------------------//
 //------------------------------------------------------------------------//
-
-add_action('wpmu_options', 'signup_code_site_admin_options');
-add_action('update_wpmu_options', 'signup_code_site_admin_options_process');
+add_action('init', 'signup_code_init');
+add_action('admin_menu', 'signup_code_plug_pages');
+add_action('network_admin_menu', 'signup_code_plug_pages');
 add_action('signup_extra_fields', 'signup_code_field_wpmu');
 add_action('bp_after_account_details_fields', 'signup_code_field_bp');
 add_filter('wpmu_validate_user_signup', 'signup_code_filter_wpmu');
@@ -40,9 +51,24 @@ add_action('wp_head', 'signup_code_stylesheet');
 //---Functions------------------------------------------------------------//
 //------------------------------------------------------------------------//
 
-function signup_code_site_admin_options_process() {
-	update_site_option( 'signup_code' , $_POST['signup_code'] );
-	update_site_option( 'signup_code_branding' , $_POST['signup_code_branding'] );
+function signup_code_init() {
+	if ( !is_multisite() )
+		exit( 'The Simple Ads plugin is only compatible with WordPress Multisite.' );
+		
+	load_plugin_textdomain('signup_code', false, dirname(plugin_basename(__FILE__)).'/languages');
+}
+
+function signup_code_plug_pages() {
+	global $wpdb, $wp_roles, $current_user, $wp_version, $signup_code_settings_page, $signup_code_settings_page_long;
+	if ( version_compare($wp_version, '3.0.9', '>') ) {
+	    if ( is_network_admin() ) {
+		add_submenu_page($signup_code_settings_page, __('Signup Code', 'signup_code'), __('Signup Code', 'signup_code'), 10, 'signup_code', 'signup_code_site_admin_options');
+	    }
+	} else {
+	    if ( is_site_admin() ) {
+		add_submenu_page($signup_code_settings_page, __('Signup Code', 'signup_code'), __('Signup Code', 'signup_code'), 10, 'signup_code', 'signup_code_site_admin_options');
+	    }   
+	}
 }
 
 //------------------------------------------------------------------------//
@@ -58,25 +84,66 @@ function signup_code_stylesheet() {
 }
 
 function signup_code_site_admin_options() {
+	global $wpdb, $wp_roles, $current_user, $signup_code_settings_page;
+	
+	if(!current_user_can('manage_options')) {
+		echo "<p>" . __('Nice Try...', 'signup_code') . "</p>";  //If accessed properly, this message doesn't appear.
+		return;
+	}
+	if (isset($_GET['updated'])) {
+		?><div id="message" class="updated fade"><p><?php _e(urldecode($_GET['updatedmsg']), 'signup_code') ?></p></div><?php
+	}
+	echo '<div class="wrap">';
+	switch( $_GET[ 'action' ] ) {
+		//---------------------------------------------------//
+		default:
 	?>
-		<h3><?php _e('Signup Code') ?></h3> 
-		<table class="form-table">
-			<tr valign="top"> 
-				<th scope="row"><?php _e('Code') ?></th> 
-				<td><input name="signup_code" type="text" id="signup_code" value="<?php echo get_site_option('signup_code'); ?>" style="width: 95%"/>
-					<br />
-					<?php _e('Users must enter this code in order to signup. Letters and numbers only.') ?>
-				</td>
-			</tr>
-			<tr valign="top"> 
-				<th scope="row"><?php _e('Signup Code Branding') ?></th> 
-				<td><input name="signup_code_branding" type="text" id="signup_code_branding" value="<?php echo stripslashes(get_site_option('signup_code_branding', 'Signup Code')); ?>" style="width: 95%"/>
-					<br />
-					<?php _e('This is the text that will be displayed on the signup form. Ex: Invite Code') ?>
-				</td>
-			</tr>
-		</table>
+	<h2><?php _e('Signup Code') ?></h2>
+	<form method="post" action="<?php print $signup_code_settings_page; ?>?page=signup_code&action=process">
+	<table class="form-table">
+		<tr valign="top"> 
+			<th scope="row"><?php _e('Code') ?></th> 
+			<td><input name="signup_code" type="text" id="signup_code" value="<?php echo get_site_option('signup_code'); ?>" style="width: 95%"/>
+				<br />
+				<?php _e('Users must enter this code in order to signup. Letters and numbers only.') ?>
+			</td>
+		</tr>
+		<tr valign="top"> 
+			<th scope="row"><?php _e('Signup Code Branding') ?></th> 
+			<td><input name="signup_code_branding" type="text" id="signup_code_branding" value="<?php echo stripslashes(get_site_option('signup_code_branding', 'Signup Code')); ?>" style="width: 95%"/>
+				<br />
+				<?php _e('This is the text that will be displayed on the signup form. Ex: Invite Code') ?>
+			</td>
+		</tr>
+	</table>
+		<p class="submit">
+			<input type="submit" name="Submit" value="<?php _e('Save Changes', 'signup_code') ?>" />
+			<input type="submit" name="Reset" value="<?php _e('Reset', 'signup_code') ?>" />
+		</p>
+        </form>
 	<?php
+		break;
+	case "process":
+			if ( isset( $_POST[ 'Reset' ] ) ) {
+				update_site_option( 'signup_code', "");
+				update_site_option( 'signup_code_branding', "");
+				echo "
+				<SCRIPT LANGUAGE='JavaScript'>
+				window.location='{$signup_code_settings_page}?page=signup_code&updated=true&updatedmsg=" . urlencode(__('Changes saved.', 'signup_code')) . "';
+				</script>
+				";			
+			} else {
+				update_site_option( 'signup_code' , $_POST['signup_code'] );
+				update_site_option( 'signup_code_branding' , $_POST['signup_code_branding'] );
+				echo "
+				<SCRIPT LANGUAGE='JavaScript'>
+				window.location='{$signup_code_settings_page}?page=signup_code&updated=true&updatedmsg=" . urlencode(__('Changes saved.', 'signup_code')) . "';
+				</script>
+				";
+			}
+		break;
+	}
+	echo '</div>';
 }
 
 //------------------------------------------------------------------------//
@@ -88,13 +155,13 @@ function signup_code_field_wpmu($errors) {
 	$signup_code = get_site_option('signup_code');
 	if ( !empty( $signup_code ) ) {
 	?>
-    <label for="password"><?php _e(stripslashes(get_site_option('signup_code_branding', 'Signup Code'))); ?>:</label>
-		<?php
+	<label for="password"><?php _e(stripslashes(get_site_option('signup_code_branding', 'Signup Code'))); ?>:</label>
+	<?php
         if($error) {
-			echo '<p class="error">' . $error . '</p>';
+		echo '<p class="error">' . $error . '</p>';
         }
-		?>
-		<input type="text" name="signup_code" id="signup_code" value="<?php echo $_GET['code']; ?>" />
+	?>
+	<input type="text" name="signup_code" id="signup_code" value="<?php echo $_GET['code']; ?>" />
 	<?php
 	}
 }
