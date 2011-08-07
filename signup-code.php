@@ -4,7 +4,7 @@ Plugin Name: Signup Code
 Plugin URI: http://premium.wpmudev.org/project/signup-code
 Description: Limit who can sign up for a blog or user account at your site by requiring a special code that you can easily configure yourself
 Author: S H Mohanjith (Incsub), Andrew Billits (Incsub)
-Version: 1.0.2
+Version: 1.0.3
 Author URI: http://premium.wpmudev.org
 Network: true
 WDP ID: 98
@@ -152,7 +152,11 @@ function signup_code_site_admin_options() {
 //------------------------------------------------------------------------//
 
 function signup_code_field_wpmu($errors) {
-	$error = $errors->get_error_message('signup_code');
+	if (!empty($errors)) {
+		$error = $errors->get_error_message('signup_code');
+	} else {
+		$error = false;
+	}
 	$signup_code = get_site_option('signup_code');
 	if ( !empty( $signup_code ) ) {
 	?>
