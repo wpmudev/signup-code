@@ -8,6 +8,7 @@ Version: 1.0.3
 Author URI: http://premium.wpmudev.org
 Network: true
 WDP ID: 98
+Text Domain: signup_code
 */
 
 /* 
