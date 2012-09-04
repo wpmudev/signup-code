@@ -64,11 +64,11 @@ function signup_code_plug_pages() {
 	global $wpdb, $wp_roles, $current_user, $wp_version, $signup_code_settings_page, $signup_code_settings_page_long;
 	if ( version_compare($wp_version, '3.0.9', '>') ) {
 	    if ( is_network_admin() ) {
-		add_submenu_page($signup_code_settings_page, __('Signup Code', 'signup_code'), __('Signup Code', 'signup_code'), 10, 'signup_code', 'signup_code_site_admin_options');
+		add_submenu_page($signup_code_settings_page, __('Signup Code', 'signup_code'), __('Signup Code', 'signup_code'), 'manage_network_options', 'signup_code', 'signup_code_site_admin_options');
 	    }
 	} else {
-	    if ( is_site_admin() ) {
-		add_submenu_page($signup_code_settings_page, __('Signup Code', 'signup_code'), __('Signup Code', 'signup_code'), 10, 'signup_code', 'signup_code_site_admin_options');
+	    if ( is_super_admin() ) {
+		add_submenu_page($signup_code_settings_page, __('Signup Code', 'signup_code'), __('Signup Code', 'signup_code'), 'manage_network_options', 'signup_code', 'signup_code_site_admin_options');
 	    }   
 	}
 }
