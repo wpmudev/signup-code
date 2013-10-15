@@ -4,7 +4,7 @@ Plugin Name: Signup Code
 Plugin URI: http://premium.wpmudev.org/project/signup-code
 Description: Limit who can sign up for a blog or user account at your site by requiring a special code that you can easily configure yourself
 Author: S H Mohanjith (Incsub), Andrew Billits (Incsub)
-Version: 1.0.3.1
+Version: 1.0.3.2
 Author URI: http://premium.wpmudev.org
 Network: true
 WDP ID: 98
@@ -112,7 +112,7 @@ function signup_code_site_admin_options() {
 		</tr>
 		<tr valign="top"> 
 			<th scope="row"><?php _e('Signup Code Branding', 'signup_code') ?></th> 
-			<td><input name="signup_code_branding" type="text" id="signup_code_branding" value="<?php echo stripslashes(get_site_option('signup_code_branding', 'Signup Code')); ?>" style="width: 95%"/>
+			<td><input name="signup_code_branding" type="text" id="signup_code_branding" value="<?php echo get_site_option('signup_code_branding', 'Signup Code'); ?>" style="width: 95%"/>
 				<br />
 				<?php _e('This is the text that will be displayed on the signup form. Ex: Invite Code', 'signup_code') ?>
 			</td>
@@ -130,15 +130,15 @@ function signup_code_site_admin_options() {
 				update_site_option( 'signup_code', "");
 				update_site_option( 'signup_code_branding', "");
 				echo "
-				<SCRIPT LANGUAGE='JavaScript'>
+				<script type='text/javascript'>
 				window.location='{$signup_code_settings_page}?page=signup_code&updated=true&updatedmsg=" . urlencode(__('Changes saved.', 'signup_code')) . "';
 				</script>
 				";			
 			} else {
-				update_site_option( 'signup_code' , $_POST['signup_code'] );
-				update_site_option( 'signup_code_branding' , $_POST['signup_code_branding'] );
+				update_site_option( 'signup_code', stripslashes($_POST['signup_code']) );
+				update_site_option( 'signup_code_branding', stripslashes($_POST['signup_code_branding']) );
 				echo "
-				<SCRIPT LANGUAGE='JavaScript'>
+				<script type='text/javascript'>
 				window.location='{$signup_code_settings_page}?page=signup_code&updated=true&updatedmsg=" . urlencode(__('Changes saved.', 'signup_code')) . "';
 				</script>
 				";
@@ -161,7 +161,7 @@ function signup_code_field_wpmu($errors) {
 	$signup_code = get_site_option('signup_code');
 	if ( !empty( $signup_code ) ) {
 	?>
-	<label for="password"><?php _e(stripslashes(get_site_option('signup_code_branding', 'Signup Code')), 'signup_code'); ?>:</label>
+	<label for="password"><?php _e(get_site_option('signup_code_branding', 'Signup Code'), 'signup_code'); ?>:</label>
 	<?php
         if($error) {
 		echo '<p class="error">' . $error . '</p>';
@@ -177,7 +177,7 @@ function signup_code_field_bp() {
 	if ( !empty( $signup_code ) ) {
 	?>
     <div class="register-section" id="blog-details-section">
-    <label for="password"><?php _e(stripslashes(get_site_option('signup_code_branding', 'Signup Code')), 'signup_code'); ?>:</label>
+    <label for="password"><?php _e(get_site_option('signup_code_branding', 'Signup Code'), 'signup_code'); ?>:</label>
 		<?php do_action( 'bp_signup_code_errors' ) ?>
 		<input type="text" name="signup_code" id="signup_code" value="<?php echo $_GET['code']; ?>" />
     </div>
@@ -189,7 +189,7 @@ function signup_code_filter_wpmu($content) {
 	$signup_code = get_site_option('signup_code');
 	if ( !empty( $signup_code ) ) {
 		if($signup_code != $_POST['signup_code'] && $_POST['stage'] == 'validate-user-signup') {
-			$content['errors']->add('signup_code', __('Invalid ' . strtolower(stripslashes(get_site_option('signup_code_branding', 'Signup Code'))) . '.', 'signup_code'));
+			$content['errors']->add('signup_code', __('Invalid ' . strtolower(get_site_option('signup_code_branding', 'Signup Code')) . '.', 'signup_code'));
 		}
 	}
 	return $content;
@@ -200,7 +200,7 @@ function signup_code_filter_bp() {
 	$signup_code = get_site_option('signup_code');
 	if ( !empty( $signup_code ) ) {
 		if($signup_code != $_POST['signup_code'] && isset($_POST['signup_username'])) {
-			$bp->signup->errors['signup_code'] = __('Invalid ' . strtolower(stripslashes(get_site_option('signup_code_branding', 'Signup Code'))) . '.', 'signup_code');
+			$bp->signup->errors['signup_code'] = __('Invalid ' . strtolower(get_site_option('signup_code_branding', 'Signup Code')) . '.', 'signup_code');
 		}
 	}
 	return $content;
