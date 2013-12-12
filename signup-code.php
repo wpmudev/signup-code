@@ -11,7 +11,7 @@ WDP ID: 98
 Text Domain: signup_code
 */
 
-/* 
+/*
 Copyright 2007-2009 Incsub (http://incsub.com)
 
 This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+
+global $wpmudev_notices;
+$wpmudev_notices[] = array( 'id'=> 98, 'name'=> 'Signup Code', 'screens' => array( 'settings_page_signup_code-network' ) );
+include_once(plugin_dir_path( __FILE__ ).'external/dash-notice/wpmudev-dash-notification.php');
 
 global $signup_code_settings_page, $signup_code_settings_page_long;
 
@@ -56,7 +60,7 @@ add_action('wp_head', 'signup_code_stylesheet');
 function signup_code_init() {
 	if ( !is_multisite() )
 		exit( 'The Signup Code plugin is only compatible with WordPress Multisite.' );
-		
+
 	load_plugin_textdomain('signup_code', false, dirname(plugin_basename(__FILE__)).'/languages');
 }
 
@@ -69,7 +73,7 @@ function signup_code_plug_pages() {
 	} else {
 	    if ( is_super_admin() ) {
 		add_submenu_page($signup_code_settings_page, __('Signup Code', 'signup_code'), __('Signup Code', 'signup_code'), 'manage_network_options', 'signup_code', 'signup_code_site_admin_options');
-	    }   
+	    }
 	}
 }
 
@@ -87,7 +91,7 @@ function signup_code_stylesheet() {
 
 function signup_code_site_admin_options() {
 	global $wpdb, $wp_roles, $current_user, $signup_code_settings_page;
-	
+
 	if(!current_user_can('manage_options')) {
 		echo "<p>" . __('Nice Try...', 'signup_code') . "</p>";  //If accessed properly, this message doesn't appear.
 		return;
@@ -103,15 +107,15 @@ function signup_code_site_admin_options() {
 	<h2><?php _e('Signup Code', 'signup_code') ?></h2>
 	<form method="post" action="<?php print $signup_code_settings_page; ?>?page=signup_code&action=process">
 	<table class="form-table">
-		<tr valign="top"> 
-			<th scope="row"><?php _e('Code', 'signup_code') ?></th> 
+		<tr valign="top">
+			<th scope="row"><?php _e('Code', 'signup_code') ?></th>
 			<td><input name="signup_code" type="text" id="signup_code" value="<?php echo get_site_option('signup_code'); ?>" style="width: 95%"/>
 				<br />
 				<?php _e('Users must enter this code in order to signup. Letters and numbers only.', 'signup_code') ?>
 			</td>
 		</tr>
-		<tr valign="top"> 
-			<th scope="row"><?php _e('Signup Code Branding', 'signup_code') ?></th> 
+		<tr valign="top">
+			<th scope="row"><?php _e('Signup Code Branding', 'signup_code') ?></th>
 			<td><input name="signup_code_branding" type="text" id="signup_code_branding" value="<?php echo get_site_option('signup_code_branding', 'Signup Code'); ?>" style="width: 95%"/>
 				<br />
 				<?php _e('This is the text that will be displayed on the signup form. Ex: Invite Code', 'signup_code') ?>
@@ -119,8 +123,8 @@ function signup_code_site_admin_options() {
 		</tr>
 	</table>
 		<p class="submit">
-			<input type="submit" name="Submit" value="<?php _e('Save Changes', 'signup_code') ?>" />
-			<input type="submit" name="Reset" value="<?php _e('Reset', 'signup_code') ?>" />
+			<input class="button button-primary" type="submit" name="Submit" value="<?php _e('Save Changes', 'signup_code') ?>" />
+			<input class="button button-secondary" type="submit" name="Reset" value="<?php _e('Reset', 'signup_code') ?>" />
 		</p>
         </form>
 	<?php
@@ -133,7 +137,7 @@ function signup_code_site_admin_options() {
 				<script type='text/javascript'>
 				window.location='{$signup_code_settings_page}?page=signup_code&updated=true&updatedmsg=" . urlencode(__('Changes saved.', 'signup_code')) . "';
 				</script>
-				";			
+				";
 			} else {
 				update_site_option( 'signup_code', stripslashes($_POST['signup_code']) );
 				update_site_option( 'signup_code_branding', stripslashes($_POST['signup_code_branding']) );
