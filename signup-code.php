@@ -4,7 +4,7 @@ Plugin Name: Signup Code
 Plugin URI: http://premium.wpmudev.org/project/signup-code
 Description: Limit who can sign up for a blog or user account at your site by requiring a special code that you can easily configure yourself
 Author: S H Mohanjith (Incsub), Andrew Billits (Incsub)
-Version: 1.0.3.2
+Version: 1.0.3.3
 Author URI: http://premium.wpmudev.org
 Network: true
 WDP ID: 98
@@ -27,10 +27,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
-global $wpmudev_notices;
-$wpmudev_notices[] = array( 'id'=> 98, 'name'=> 'Signup Code', 'screens' => array( 'settings_page_signup_code-network' ) );
-include_once(plugin_dir_path( __FILE__ ).'external/dash-notice/wpmudev-dash-notification.php');
 
 global $signup_code_settings_page, $signup_code_settings_page_long;
 
@@ -219,3 +215,8 @@ if ( !function_exists( 'wdp_un_check' ) ) {
 			echo '<div class="error fade"><p>' . __('Please install the latest version of <a href="http://premium.wpmudev.org/project/update-notifications/" title="Download Now &raquo;">our free Update Notifications plugin</a> which helps you stay up-to-date with the most stable, secure versions of WPMU DEV themes and plugins. <a href="http://premium.wpmudev.org/wpmu-dev/update-notifications-plugin-information/">More information &raquo;</a>', 'wpmudev') . '</a></p></div>';
 	}
 }
+
+global $wpmudev_notices;
+$wpmudev_notices[] = array( 'id'=> 98, 'name'=> 'Signup Code', 'screens' => array( 'settings_page_signup_code-network' ) );
+include_once(plugin_dir_path( __FILE__ ).'external/dash-notice/wpmudev-dash-notification.php');
+
