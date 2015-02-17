@@ -244,7 +244,7 @@ function signup_code_filter_bp() {
 		$bp->signup->errors['signup_code'] = sprintf( __( 'Invalid %s.', 'signup_code' ), strtolower( get_site_option( 'signup_code_branding', 'Signup Code' ) ) );
 }
 
-global $wpmudev_notices;
-$wpmudev_notices[] = array( 'id'=> 98, 'name'=> 'Signup Code', 'screens' => array( 'settings_page_signup_code-network' ) );
-include_once( plugin_dir_path( __FILE__ ).'external/dash-notice/wpmudev-dash-notification.php' );
+//global $wpmudev_notices;
+//$wpmudev_notices[] = array( 'id'=> 98, 'name'=> 'Signup Code', 'screens' => array( 'settings_page_signup_code-network' ) );
+//include_once( plugin_dir_path( __FILE__ ).'external/dash-notice/wpmudev-dash-notification.php' );
 
