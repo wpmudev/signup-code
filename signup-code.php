@@ -227,7 +227,7 @@ function signup_code_filter_wpmu( $content ) {
 	if ( empty( $signup_code ) )
 		return $content;
 	
-	if ( $signup_code != stripslashes( $_POST['signup_code'] ) && $_POST['stage'] == 'validate-user-signup' )
+	if ( ! isset( $_POST['signup_code'] ) || $signup_code != stripslashes( $_POST['signup_code'] ) )
 		$content['errors']->add('signup_code', sprintf( __( 'Invalid %s.', 'signup_code' ), strtolower( get_site_option( 'signup_code_branding', 'Signup Code' ) ) ) );
 	
 	return $content;
