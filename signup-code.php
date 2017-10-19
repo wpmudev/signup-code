@@ -38,6 +38,7 @@ add_action('network_admin_menu', 'signup_code_plug_pages');
 add_action('signup_extra_fields', 'signup_code_field_wpmu');
 add_action('bp_after_account_details_fields', 'signup_code_field_bp');
 add_filter('wpmu_validate_user_signup', 'signup_code_filter_wpmu');
+add_filter( 'signup_hidden_fields', 'signup_code_hidden_fields', 10 );
 add_filter('bp_signup_validate', 'signup_code_filter_bp');
 
 //------------------------------------------------------------------------//
@@ -231,6 +232,24 @@ function signup_code_filter_wpmu( $content ) {
 		$content['errors']->add('signup_code', sprintf( __( 'Invalid %s.', 'signup_code' ), strtolower( get_site_option( 'signup_code_branding', 'Signup Code' ) ) ) );
 	
 	return $content;
+}
+
+function signup_code_hidden_fields(){
+
+	//Add the "stage" hidden input on the Pro Sites checkout page
+	if( ! class_exists('ProSites') ){
+		return;
+	}
+	global $psts;
+
+	if( ! is_page( $psts->get_setting( 'checkout_page' ) ) ){
+		return;
+	}
+
+	?>
+	<input type="hidden" name="stage" value="validate-user-signup" />
+	<?php
+	remove_action( 'signup_hidden_fields', 'signup_code_hidden_fields', 10 );
 }
 
 function signup_code_filter_bp() {
