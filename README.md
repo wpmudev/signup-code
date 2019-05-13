@@ -2,8 +2,15 @@
 
 **INACTIVE NOTICE: This plugin is unsupported by WPMUDEV, we've published it here for those technical types who might want to fork and maintain it for their needs.**
 
+## Translations
 
-## Signup Code blocks visitors from registering a new site or user account without providing a custom, network specific, signup code.
+Translation files can be found at https://github.com/wpmudev/translations
+
+
+
+## Usage
+
+Signup Code blocks visitors from registering a new site or user account without providing a custom, network specific, signup code.
 
 Add a simple, effective layer of protection and ensure only specific people can create new users or sites. Designed to compliment any Multisite configuration and work flawlessly with other third-party plugins.
 
